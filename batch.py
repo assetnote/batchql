@@ -239,5 +239,5 @@ with open(args.wordlist, "r") as wordlist:
     print(attempt_str)
     r = requests.post(args.endpoint, headers=header_dict, json=gql_list_dict, proxies=proxies, verify=False)
     if args.output:
-      with open("output.txt", "a") as output_file:
-        output_file.write("{}: {}".format(attempt_str, r.json()))
+      with open(args.output, "a") as output_file:
+        output_file.write("{}: {}\n".format(attempt_str, r.json()))
