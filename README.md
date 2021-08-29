@@ -88,5 +88,5 @@ The above command does the following:
 
 # References
 
-[GraphQL Batching Attack - Wallarm](https://lab.wallarm.com/graphql-batching-attack/)
-[Mitigating Batching Attacks](https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html#mitigating-batching-attacks)
+- [GraphQL Batching Attack - Wallarm](https://lab.wallarm.com/graphql-batching-attack/)
+- [Mitigating Batching Attacks](https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html#mitigating-batching-attacks)
