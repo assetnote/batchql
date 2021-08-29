@@ -1,0 +1,3 @@
+query {
+  systemDiagnostics(username:"admin", password:"#VARIABLE#", cmd:"ls")
+}
