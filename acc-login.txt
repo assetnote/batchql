@@ -1,0 +1,30 @@
+mutation emailLoginRemembered($loginInput: InputRememberedEmailLogin!) {
+  emailLoginRemembered(loginInput: $loginInput) {
+    authToken {
+      accessToken
+      __typename
+    }
+    userSessionResponse {
+      userToken
+      userIdentity {
+        userId
+        identityType
+        verified
+        onboardingStatus
+        registrationReferralCode
+        userReferralInfo {
+          referralCode {
+            code
+            valid
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  }
+
