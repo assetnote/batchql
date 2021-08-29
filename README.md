@@ -1,6 +1,6 @@
 # BatchQL
 
-BatchQL is a GraphQL security auditing tool with a focus on performing batch GraphQL queries and mutations.
+BatchQL is a GraphQL security auditing script with a focus on performing batch GraphQL queries and mutations. This script is not complex, and we welcome improvments.
 
 When exploring the problem space of GraphQL batching attacks, we found that there were a few blog posts on the internet, however no tool to perform GraphQL batching attacks.
 
@@ -11,7 +11,8 @@ GraphQL batching attacks can be quite serious depending on the functionalities i
 This tool is capable of detecting the following:
 
 - Introspection query support
-- Schema suggestions
+- Schema suggestions detection
+- Potential CSRF detection
 - Query name based batching
 - Query JSON list based batching
 
@@ -20,6 +21,21 @@ This tool is capable of detecting the following:
 Currently, this tool only supports sending JSON list based queries for batching attacks. It supports scenarios where the variables are embedded in the query, or where they are provided in the JSON input.
 
 # Usage
+
+## Enumeration
+
+```
+❯ python batch.py -e http://re.local:5000/graphiql -p localhost:8080
+
+Schema suggestions enabled. Use Clairvoyance to recover schema: https://github.com/nikitastupin/clairvoyance
+CSRF GET based successful. Please confirm that this is a valid issue.
+CSRF POST based successful. Please confirm that this is a valid issue.
+Query name based batching: GraphQL batching is possible... preflight request was successful
+Query JSON list based batching: GraphQL batching is possible... preflight request was successful
+Most provide query, wordlist, and size to perform batching attack.
+```
+
+## Batching Attacks
 
 1. Save a file that contains your GraphQL query i.e. `acc-login.txt`:
 
@@ -69,3 +85,8 @@ The above command does the following:
 - Specifies the batch size `--size 100`
 - Specifies the endpoint `-e http://re.local:5000/graphiql`
 - Specifies a proxy `-p localhost:8080`
+
+# References
+
+[GraphQL Batching Attack - Wallarm](https://lab.wallarm.com/graphql-batching-attack/)
+[Mitigating Batching Attacks](https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html#mitigating-batching-attacks)
