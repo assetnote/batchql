@@ -81,7 +81,7 @@ The above command does the following:
 
 - Specifies a query from a local file `--query acc-login.txt`.
 - Specifies a wordlist `--wordlist passwords.txt`
-- Specifies the variable input with the replacement identifier `-v {"loginInput":{"email":"admin@shubs.io","password":"#VARIABLE#","rememberMe":false}}`
+- Specifies the variable input with the replacement identifier `-v {"loginInput":{"email":"admin@example.com","password":"#VARIABLE#","rememberMe":false}}`
 - Specifies the batch size `--size 100`
 - Specifies the endpoint `-e http://re.local:5000/graphiql`
 - Specifies a proxy `-p localhost:8080`
