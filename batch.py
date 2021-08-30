@@ -186,7 +186,7 @@ try:
   if r.json().get("errors"):
     error_count = len(r.json()["errors"])
     if error_count > 1:
-      print("Query name based batching: GraphQL batching is possible... preflight request was successful")
+      print("Query name based batching: GraphQL batching is possible... preflight request was successful.")
       double_query_success = True
 except Exception as e:
   print("Failed preflight request (query name based batching). Exception: {}".format(e))
@@ -199,7 +199,7 @@ try:
   r = requests.post(args.endpoint, headers=header_dict, json=repeated_query_dict, proxies=proxies, verify=False)
   error_count = len(r.json())
   if error_count > 1:
-    print("Query JSON list based batching: GraphQL batching is possible... preflight request was successful")
+    print("Query JSON list based batching: GraphQL batching is possible... preflight request was successful.")
     repeated_query_success = True
 except Exception as e:
   print("Failed preflight request (query JSON list based batching). Exception: {}".format(e))
