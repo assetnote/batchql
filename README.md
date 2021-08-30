@@ -88,6 +88,7 @@ The above command does the following:
 
 # References
 
+- [Exploiting GraphQL](https://blog.assetnote.io/2021/08/29/exploiting-graphql/)
 - [Damn Vulnerable GraphQL Application](https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application)
 - [GraphQL Batching Attack - Wallarm](https://lab.wallarm.com/graphql-batching-attack/)
 - [Mitigating Batching Attacks](https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html#mitigating-batching-attacks)
