@@ -1,6 +1,6 @@
 # BatchQL
 
-BatchQL is a GraphQL security auditing script with a focus on performing batch GraphQL queries and mutations. This script is not complex, and we welcome improvments.
+BatchQL is a GraphQL security auditing script with a focus on performing batch GraphQL queries and mutations. This script is not complex, and we welcome improvements.
 
 When exploring the problem space of GraphQL batching attacks, we found that there were a few blog posts on the internet, however no tool to perform GraphQL batching attacks.
 
@@ -88,5 +88,6 @@ The above command does the following:
 
 # References
 
+- [Damn Vulnerable GraphQL Application](https://github.com/dolevf/Damn-Vulnerable-GraphQL-Application)
 - [GraphQL Batching Attack - Wallarm](https://lab.wallarm.com/graphql-batching-attack/)
 - [Mitigating Batching Attacks](https://cheatsheetseries.owasp.org/cheatsheets/GraphQL_Cheat_Sheet.html#mitigating-batching-attacks)

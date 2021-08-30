@@ -14,7 +14,7 @@ parser.add_argument("-w", "--wordlist", help="Wordlist to be attempted via batch
 parser.add_argument('-H', "--header", action='append', nargs='+')
 parser.add_argument("-p", "--proxy", help="Proxy to use during request (localhost:8080).")
 parser.add_argument("-s", "--size", help="The total batch size, how many times the query will repeat.")
-parser.add_argument("-o", "--output", help="Output GraphQL responses to file.")
+parser.add_argument("-o", "--output", help="Output GraphQL responses to file.", default="output.txt")
 args = parser.parse_args()
 
 if args.endpoint is None:
@@ -124,10 +124,8 @@ query IntrospectionQuery {
 introspection_query_success = False
 try:
   r = requests.post(args.endpoint, headers=header_dict, json=dict(query=introspection_query), proxies=proxies, verify=False)
-  # error_count = len(r.json()["errors"])
-  # if error_count > 1:
   if r.json().get("data"):
-    print("Introspection request was successful.")
+    print("Introspection request was successful. Load up this endpoint in Altair GraphQL Client: https://chrome.google.com/webstore/detail/altair-graphql-client/flnheeellpciglgpaodhkhmapeljopja?hl=en")
     introspection_query_success = True
 except Exception as e:
   print("Failed introspection query request. Exception: {}".format(e))
