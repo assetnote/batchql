@@ -30,8 +30,8 @@ Currently, this tool only supports sending JSON list based queries for batching 
 Schema suggestions enabled. Use Clairvoyance to recover schema: https://github.com/nikitastupin/clairvoyance
 CSRF GET based successful. Please confirm that this is a valid issue.
 CSRF POST based successful. Please confirm that this is a valid issue.
-Query name based batching: GraphQL batching is possible... preflight request was successful
-Query JSON list based batching: GraphQL batching is possible... preflight request was successful
+Query name based batching: GraphQL batching is possible... preflight request was successful.
+Query JSON list based batching: GraphQL batching is possible... preflight request was successful.
 Most provide query, wordlist, and size to perform batching attack.
 ```
 
