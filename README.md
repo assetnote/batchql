@@ -39,7 +39,7 @@ Most provide query, wordlist, and size to perform batching attack.
 
 1. Save a file that contains your GraphQL query i.e. `acc-login.txt`:
 
-```
+```graphql
 mutation emailLoginRemembered($loginInput: InputRememberedEmailLogin!) {
   emailLoginRemembered(loginInput: $loginInput) {
     authToken {
